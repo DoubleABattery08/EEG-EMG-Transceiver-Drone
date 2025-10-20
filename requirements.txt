@@ -1,0 +1,20 @@
+# EEG-EMG Transceiver Drone Control System
+# Python dependencies
+
+# Serial communication for MindWave EEG headset
+pyserial>=3.5
+
+# Numerical operations for coordinate mapping
+numpy>=1.21.0
+
+# Optional: Enhanced Tello SDK (alternative to custom implementation)
+# djitellopy>=2.4.0
+
+# Optional: Data visualization
+# matplotlib>=3.5.0
+
+# Optional: Real-time plotting
+# plotly>=5.0.0
+
+# Optional: Advanced signal processing
+# scipy>=1.7.0
