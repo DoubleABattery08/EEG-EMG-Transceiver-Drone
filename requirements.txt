@@ -7,6 +7,12 @@ pyserial>=3.5
 # Numerical operations for coordinate mapping
 numpy>=1.21.0
 
+# Web server for real-time EEG visualization
+flask>=2.3.0
+flask-socketio>=5.3.0
+flask-cors>=4.0.0
+python-socketio>=5.9.0
+
 # Optional: Enhanced Tello SDK (alternative to custom implementation)
 # djitellopy>=2.4.0
 

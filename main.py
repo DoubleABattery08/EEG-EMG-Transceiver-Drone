@@ -9,11 +9,12 @@ import time
 import logging
 import signal
 import sys
-from threading import Event
+from threading import Event, Thread
 from eeg_interface import MindWaveInterface
 from tello_controller import TelloController
 from coordinate_mapper import CylindricalCoordinateMapper
 from config import Config
+from web_server import EEGWebServer
 
 # Setup logging
 logging.basicConfig(
@@ -44,6 +45,8 @@ class EEGDroneController:
         self.eeg = None
         self.drone = None
         self.mapper = None
+        self.web_server = None
+        self.web_thread = None
         self.is_running = False
 
     def initialize(self):
@@ -61,6 +64,15 @@ class EEGDroneController:
                 port=self.config.EEG_PORT,
                 baudrate=self.config.EEG_BAUDRATE
             )
+
+            # Start web server if enabled
+            if self.config.ENABLE_WEB_SERVER:
+                logger.info("Starting web visualization server...")
+                self.web_server = EEGWebServer(self.eeg, self.config)
+                self.web_thread = Thread(target=self.web_server.start, daemon=True)
+                self.web_thread.start()
+                logger.info(f"Web dashboard available at http://{self.config.WEB_HOST}:{self.config.WEB_PORT}")
+                logger.info(f"Access from other devices: http://<raspberry-pi-ip>:{self.config.WEB_PORT}")
 
             # Initialize Tello drone
             logger.info("Initializing Tello drone...")
@@ -167,6 +179,12 @@ class EEGDroneController:
                 self.eeg.disconnect()
             except Exception as e:
                 logger.error(f"Error disconnecting EEG: {e}")
+
+        if self.web_server:
+            try:
+                self.web_server.stop()
+            except Exception as e:
+                logger.error(f"Error stopping web server: {e}")
 
         logger.info("System shutdown complete")
 

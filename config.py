@@ -26,6 +26,13 @@ class Config:
     MIN_BATTERY_LEVEL = 20  # Don't fly if battery below this percentage
     AUTO_TAKEOFF = False  # Set to True to automatically takeoff on start
 
+    # ========== Web Visualization Server ==========
+    # Enable web dashboard for real-time EEG visualization
+    ENABLE_WEB_SERVER = True  # Set to False to disable web server
+    WEB_HOST = '0.0.0.0'  # Listen on all network interfaces
+    WEB_PORT = 5000  # Web server port
+    WEB_UPDATE_RATE = 10  # Data updates per second (Hz)
+
     # ========== Alpha Wave Mapping Configuration ==========
     # Alpha power ranges (adjust based on your headset readings)
     # These values are typical for MindWave Mobile 2
@@ -110,6 +117,9 @@ class Config:
         config_str = "EEG-Drone Control Configuration:\n"
         config_str += f"  EEG Port: {self.EEG_PORT}\n"
         config_str += f"  Tello IP: {self.TELLO_IP}\n"
+        config_str += f"  Web Server: {'Enabled' if self.ENABLE_WEB_SERVER else 'Disabled'}\n"
+        if self.ENABLE_WEB_SERVER:
+            config_str += f"  Web Port: {self.WEB_PORT}\n"
         config_str += f"  Control Mode: {self.CONTROL_MODE}\n"
         config_str += f"  Alpha Range: {self.ALPHA_MIN} - {self.ALPHA_MAX}\n"
         config_str += f"  Smoothing Factor: {self.SMOOTHING_FACTOR}\n"
