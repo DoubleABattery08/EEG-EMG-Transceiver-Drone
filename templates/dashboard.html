@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<<<<<<< HEAD
     <title>EEG Monitor - MindWave Mobile 2</title>
 
     <!-- Chart.js -->
@@ -16,6 +17,16 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
+=======
+    <title>EEG Brain Wave Monitor - Real-time Dashboard</title>
+
+    <!-- Chart.js for graphs -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+    <!-- Socket.IO for real-time data -->
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+
+>>>>>>> 4f32a46630c20557cea86cceabb6ac4b0c9e2154
     <style>
         * {
             margin: 0;
@@ -24,6 +35,7 @@
         }
 
         body {
+<<<<<<< HEAD
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             background: #0a0e27;
             color: #e4e4e7;
@@ -102,10 +114,76 @@
             font-weight: 600;
             color: #fafafa;
             font-variant-numeric: tabular-nums;
+=======
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 20px 0;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .status-bar {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .status-item {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 15px 30px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .status-item.good {
+            background: rgba(76, 175, 80, 0.2);
+            border-color: rgba(76, 175, 80, 0.5);
+        }
+
+        .status-item.warning {
+            background: rgba(255, 193, 7, 0.2);
+            border-color: rgba(255, 193, 7, 0.5);
+        }
+
+        .status-item.error {
+            background: rgba(244, 67, 54, 0.2);
+            border-color: rgba(244, 67, 54, 0.5);
+        }
+
+        .status-label {
+            font-size: 0.9em;
+            opacity: 0.8;
+            margin-bottom: 5px;
+        }
+
+        .status-value {
+            font-size: 1.5em;
+            font-weight: bold;
+>>>>>>> 4f32a46630c20557cea86cceabb6ac4b0c9e2154
         }
 
         .metrics-grid {
             display: grid;
+<<<<<<< HEAD
             grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
             gap: 12px;
             margin-bottom: 25px;
@@ -133,12 +211,39 @@
             color: #fafafa;
             font-family: 'SF Mono', 'Monaco', 'Courier New', monospace;
             font-variant-numeric: tabular-nums;
+=======
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .metric-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+        }
+
+        .metric-label {
+            font-size: 0.9em;
+            opacity: 0.8;
+            margin-bottom: 10px;
+        }
+
+        .metric-value {
+            font-size: 2em;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+>>>>>>> 4f32a46630c20557cea86cceabb6ac4b0c9e2154
         }
 
         .charts-container {
             display: grid;
             grid-template-columns: 1fr;
             gap: 20px;
+<<<<<<< HEAD
             margin-bottom: 25px;
         }
 
@@ -159,12 +264,34 @@
 
         canvas {
             max-height: 280px;
+=======
+            margin-bottom: 30px;
+        }
+
+        .chart-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .chart-title {
+            color: #333;
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        canvas {
+            max-height: 300px;
+>>>>>>> 4f32a46630c20557cea86cceabb6ac4b0c9e2154
         }
 
         .connection-status {
             position: fixed;
             top: 20px;
             right: 20px;
+<<<<<<< HEAD
             padding: 8px 14px;
             border-radius: 6px;
             font-size: 12px;
@@ -201,10 +328,25 @@
 
         .connection-status.disconnected::before {
             background: #ef4444;
+=======
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .connection-status.connected {
+            background: rgba(76, 175, 80, 0.9);
+        }
+
+        .connection-status.disconnected {
+            background: rgba(244, 67, 54, 0.9);
+>>>>>>> 4f32a46630c20557cea86cceabb6ac4b0c9e2154
         }
 
         footer {
             text-align: center;
+<<<<<<< HEAD
             padding: 25px 20px;
             color: #52525b;
             font-size: 12px;
@@ -214,6 +356,11 @@
 
         footer p {
             margin: 4px 0;
+=======
+            padding: 20px;
+            opacity: 0.7;
+            font-size: 0.9em;
+>>>>>>> 4f32a46630c20557cea86cceabb6ac4b0c9e2154
         }
 
         @media (min-width: 768px) {
@@ -221,6 +368,7 @@
                 grid-template-columns: 1fr 1fr;
             }
         }
+<<<<<<< HEAD
 
         @media (min-width: 1200px) {
             body {
@@ -230,17 +378,28 @@
                 font-size: 22px;
             }
         }
+=======
+>>>>>>> 4f32a46630c20557cea86cceabb6ac4b0c9e2154
     </style>
 </head>
 <body>
     <div class="connection-status" id="connectionStatus">
+<<<<<<< HEAD
         Connecting
+=======
+        Connecting...
+>>>>>>> 4f32a46630c20557cea86cceabb6ac4b0c9e2154
     </div>
 
     <div class="container">
         <header>
+<<<<<<< HEAD
             <h1>EEG Monitor</h1>
             <p class="subtitle">MindWave Mobile 2 Real-Time Data</p>
+=======
+            <h1>🧠 EEG Brain Wave Monitor</h1>
+            <p>Real-time MindWave Mobile 2 Data Visualization</p>
+>>>>>>> 4f32a46630c20557cea86cceabb6ac4b0c9e2154
         </header>
 
         <div class="status-bar">
@@ -260,6 +419,7 @@
 
         <div class="metrics-grid">
             <div class="metric-card">
+<<<<<<< HEAD
                 <div class="metric-label">Delta (0.5-3 Hz)</div>
                 <div class="metric-value" id="delta">0</div>
             </div>
@@ -277,35 +437,75 @@
             </div>
             <div class="metric-card">
                 <div class="metric-label">Gamma (30+ Hz)</div>
+=======
+                <div class="metric-label">Delta (δ)</div>
+                <div class="metric-value" id="delta">0</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Theta (θ)</div>
+                <div class="metric-value" id="theta">0</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Alpha (α)</div>
+                <div class="metric-value" id="alpha">0</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Beta (β)</div>
+                <div class="metric-value" id="beta">0</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Gamma (γ)</div>
+>>>>>>> 4f32a46630c20557cea86cceabb6ac4b0c9e2154
                 <div class="metric-value" id="gamma">0</div>
             </div>
         </div>
 
         <div class="charts-container">
             <div class="chart-card">
+<<<<<<< HEAD
                 <h3 class="chart-title">Brain Wave Activity</h3>
+=======
+                <h3 class="chart-title">Brain Wave Bands (Real-time)</h3>
+>>>>>>> 4f32a46630c20557cea86cceabb6ac4b0c9e2154
                 <canvas id="waveChart"></canvas>
             </div>
 
             <div class="chart-card">
+<<<<<<< HEAD
                 <h3 class="chart-title">Alpha Band Detail</h3>
+=======
+                <h3 class="chart-title">Alpha Wave Detail</h3>
+>>>>>>> 4f32a46630c20557cea86cceabb6ac4b0c9e2154
                 <canvas id="alphaChart"></canvas>
             </div>
 
             <div class="chart-card">
+<<<<<<< HEAD
                 <h3 class="chart-title">Beta Band Detail</h3>
+=======
+                <h3 class="chart-title">Beta Wave Detail</h3>
+>>>>>>> 4f32a46630c20557cea86cceabb6ac4b0c9e2154
                 <canvas id="betaChart"></canvas>
             </div>
 
             <div class="chart-card">
+<<<<<<< HEAD
                 <h3 class="chart-title">Cognitive Metrics</h3>
+=======
+                <h3 class="chart-title">Attention & Meditation</h3>
+>>>>>>> 4f32a46630c20557cea86cceabb6ac4b0c9e2154
                 <canvas id="cognitiveChart"></canvas>
             </div>
         </div>
 
         <footer>
+<<<<<<< HEAD
             <p>EEG-Controlled Drone System</p>
             <p>Update Rate: {{ update_rate }} Hz</p>
+=======
+            <p>EEG-Controlled Drone System | MindWave Mobile 2 + DJI Tello</p>
+            <p>Data updates {{ update_rate }}x per second</p>
+>>>>>>> 4f32a46630c20557cea86cceabb6ac4b0c9e2154
         </footer>
     </div>
 
@@ -316,18 +516,30 @@
         // Connection status
         socket.on('connect', () => {
             console.log('Connected to server');
+<<<<<<< HEAD
             document.getElementById('connectionStatus').textContent = 'Connected';
+=======
+            document.getElementById('connectionStatus').textContent = '● Connected';
+>>>>>>> 4f32a46630c20557cea86cceabb6ac4b0c9e2154
             document.getElementById('connectionStatus').className = 'connection-status connected';
         });
 
         socket.on('disconnect', () => {
             console.log('Disconnected from server');
+<<<<<<< HEAD
             document.getElementById('connectionStatus').textContent = 'Disconnected';
+=======
+            document.getElementById('connectionStatus').textContent = '● Disconnected';
+>>>>>>> 4f32a46630c20557cea86cceabb6ac4b0c9e2154
             document.getElementById('connectionStatus').className = 'connection-status disconnected';
         });
 
         // Data buffer for charts
+<<<<<<< HEAD
         const maxDataPoints = 60;
+=======
+        const maxDataPoints = 50;
+>>>>>>> 4f32a46630c20557cea86cceabb6ac4b0c9e2154
         const dataBuffer = {
             timestamps: [],
             delta: [],
@@ -342,6 +554,7 @@
             meditation: []
         };
 
+<<<<<<< HEAD
         // Chart.js default configuration
         Chart.defaults.color = '#71717a';
         Chart.defaults.borderColor = '#27272a';
@@ -349,12 +562,16 @@
         Chart.defaults.font.size = 11;
 
         // Chart options
+=======
+        // Chart configurations
+>>>>>>> 4f32a46630c20557cea86cceabb6ac4b0c9e2154
         const chartOptions = {
             responsive: true,
             maintainAspectRatio: true,
             animation: {
                 duration: 0
             },
+<<<<<<< HEAD
             interaction: {
                 intersect: false,
                 mode: 'index'
@@ -374,11 +591,20 @@
                     ticks: {
                         color: '#71717a'
                     }
+=======
+            scales: {
+                x: {
+                    display: false
+                },
+                y: {
+                    beginAtZero: true
+>>>>>>> 4f32a46630c20557cea86cceabb6ac4b0c9e2154
                 }
             },
             plugins: {
                 legend: {
                     display: true,
+<<<<<<< HEAD
                     position: 'top',
                     labels: {
                         padding: 12,
@@ -395,17 +621,25 @@
                     borderWidth: 1,
                     padding: 10,
                     displayColors: true
+=======
+                    position: 'top'
+>>>>>>> 4f32a46630c20557cea86cceabb6ac4b0c9e2154
                 }
             }
         };
 
+<<<<<<< HEAD
         // Wave Chart
+=======
+        // Wave Chart (Main brain waves)
+>>>>>>> 4f32a46630c20557cea86cceabb6ac4b0c9e2154
         const waveChart = new Chart(document.getElementById('waveChart'), {
             type: 'line',
             data: {
                 labels: [],
                 datasets: [
                     {
+<<<<<<< HEAD
                         label: 'Delta',
                         data: [],
                         borderColor: '#8b5cf6',
@@ -440,19 +674,52 @@
                         borderWidth: 2,
                         tension: 0.3,
                         pointRadius: 0
+=======
+                        label: 'Delta (0.5-3 Hz)',
+                        data: [],
+                        borderColor: 'rgb(255, 99, 132)',
+                        backgroundColor: 'rgba(255, 99, 132, 0.1)',
+                        tension: 0.4
+                    },
+                    {
+                        label: 'Theta (4-7 Hz)',
+                        data: [],
+                        borderColor: 'rgb(54, 162, 235)',
+                        backgroundColor: 'rgba(54, 162, 235, 0.1)',
+                        tension: 0.4
+                    },
+                    {
+                        label: 'Alpha (8-12 Hz)',
+                        data: [],
+                        borderColor: 'rgb(75, 192, 192)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.1)',
+                        tension: 0.4
+                    },
+                    {
+                        label: 'Beta (13-30 Hz)',
+                        data: [],
+                        borderColor: 'rgb(255, 205, 86)',
+                        backgroundColor: 'rgba(255, 205, 86, 0.1)',
+                        tension: 0.4
+>>>>>>> 4f32a46630c20557cea86cceabb6ac4b0c9e2154
                     }
                 ]
             },
             options: chartOptions
         });
 
+<<<<<<< HEAD
         // Alpha Chart
+=======
+        // Alpha Detail Chart
+>>>>>>> 4f32a46630c20557cea86cceabb6ac4b0c9e2154
         const alphaChart = new Chart(document.getElementById('alphaChart'), {
             type: 'line',
             data: {
                 labels: [],
                 datasets: [
                     {
+<<<<<<< HEAD
                         label: 'Low Alpha',
                         data: [],
                         borderColor: '#06b6d4',
@@ -469,19 +736,38 @@
                         borderWidth: 2,
                         tension: 0.3,
                         pointRadius: 0
+=======
+                        label: 'Low Alpha (8-10 Hz)',
+                        data: [],
+                        borderColor: 'rgb(75, 192, 192)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        tension: 0.4
+                    },
+                    {
+                        label: 'High Alpha (10-12 Hz)',
+                        data: [],
+                        borderColor: 'rgb(54, 162, 235)',
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        tension: 0.4
+>>>>>>> 4f32a46630c20557cea86cceabb6ac4b0c9e2154
                     }
                 ]
             },
             options: chartOptions
         });
 
+<<<<<<< HEAD
         // Beta Chart
+=======
+        // Beta Detail Chart
+>>>>>>> 4f32a46630c20557cea86cceabb6ac4b0c9e2154
         const betaChart = new Chart(document.getElementById('betaChart'), {
             type: 'line',
             data: {
                 labels: [],
                 datasets: [
                     {
+<<<<<<< HEAD
                         label: 'Low Beta',
                         data: [],
                         borderColor: '#f59e0b',
@@ -498,13 +784,31 @@
                         borderWidth: 2,
                         tension: 0.3,
                         pointRadius: 0
+=======
+                        label: 'Low Beta (13-20 Hz)',
+                        data: [],
+                        borderColor: 'rgb(255, 205, 86)',
+                        backgroundColor: 'rgba(255, 205, 86, 0.2)',
+                        tension: 0.4
+                    },
+                    {
+                        label: 'High Beta (21-30 Hz)',
+                        data: [],
+                        borderColor: 'rgb(255, 159, 64)',
+                        backgroundColor: 'rgba(255, 159, 64, 0.2)',
+                        tension: 0.4
+>>>>>>> 4f32a46630c20557cea86cceabb6ac4b0c9e2154
                     }
                 ]
             },
             options: chartOptions
         });
 
+<<<<<<< HEAD
         // Cognitive Chart
+=======
+        // Cognitive Chart (Attention & Meditation)
+>>>>>>> 4f32a46630c20557cea86cceabb6ac4b0c9e2154
         const cognitiveChart = new Chart(document.getElementById('cognitiveChart'), {
             type: 'line',
             data: {
@@ -513,36 +817,60 @@
                     {
                         label: 'Attention',
                         data: [],
+<<<<<<< HEAD
                         borderColor: '#ec4899',
                         backgroundColor: 'rgba(236, 72, 153, 0.1)',
                         borderWidth: 2,
                         tension: 0.3,
                         pointRadius: 0
+=======
+                        borderColor: 'rgb(255, 99, 132)',
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        tension: 0.4
+>>>>>>> 4f32a46630c20557cea86cceabb6ac4b0c9e2154
                     },
                     {
                         label: 'Meditation',
                         data: [],
+<<<<<<< HEAD
                         borderColor: '#8b5cf6',
                         backgroundColor: 'rgba(139, 92, 246, 0.1)',
                         borderWidth: 2,
                         tension: 0.3,
                         pointRadius: 0
+=======
+                        borderColor: 'rgb(153, 102, 255)',
+                        backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                        tension: 0.4
+>>>>>>> 4f32a46630c20557cea86cceabb6ac4b0c9e2154
                     }
                 ]
             },
             options: {
                 ...chartOptions,
                 scales: {
+<<<<<<< HEAD
                     ...chartOptions.scales,
                     y: {
                         ...chartOptions.scales.y,
+=======
+                    x: {
+                        display: false
+                    },
+                    y: {
+                        beginAtZero: true,
+>>>>>>> 4f32a46630c20557cea86cceabb6ac4b0c9e2154
                         max: 100
                     }
                 }
             }
         });
 
+<<<<<<< HEAD
         // Format numbers
+=======
+        // Format large numbers
+>>>>>>> 4f32a46630c20557cea86cceabb6ac4b0c9e2154
         function formatNumber(num) {
             if (num >= 1000000) {
                 return (num / 1000000).toFixed(1) + 'M';
@@ -552,14 +880,22 @@
             return num.toFixed(0);
         }
 
+<<<<<<< HEAD
         // Update dashboard
+=======
+        // Update dashboard with new data
+>>>>>>> 4f32a46630c20557cea86cceabb6ac4b0c9e2154
         function updateDashboard(data) {
             // Update status values
             document.getElementById('signalQuality').textContent = data.signal_quality;
             document.getElementById('attention').textContent = data.attention;
             document.getElementById('meditation').textContent = data.meditation;
 
+<<<<<<< HEAD
             // Update signal quality styling
+=======
+            // Update signal quality card color
+>>>>>>> 4f32a46630c20557cea86cceabb6ac4b0c9e2154
             const signalCard = document.getElementById('signalQualityCard');
             signalCard.className = 'status-item';
             if (data.signal_quality < 50) {
@@ -570,14 +906,22 @@
                 signalCard.classList.add('error');
             }
 
+<<<<<<< HEAD
             // Update metrics
+=======
+            // Update metric cards
+>>>>>>> 4f32a46630c20557cea86cceabb6ac4b0c9e2154
             document.getElementById('delta').textContent = formatNumber(data.delta);
             document.getElementById('theta').textContent = formatNumber(data.theta);
             document.getElementById('alpha').textContent = formatNumber(data.alpha);
             document.getElementById('beta').textContent = formatNumber((data.low_beta + data.high_beta) / 2);
             document.getElementById('gamma').textContent = formatNumber((data.low_gamma + data.mid_gamma) / 2);
 
+<<<<<<< HEAD
             // Add to buffer
+=======
+            // Add to data buffer
+>>>>>>> 4f32a46630c20557cea86cceabb6ac4b0c9e2154
             const timestamp = new Date().toLocaleTimeString();
             dataBuffer.timestamps.push(timestamp);
             dataBuffer.delta.push(data.delta);
@@ -591,17 +935,29 @@
             dataBuffer.attention.push(data.attention);
             dataBuffer.meditation.push(data.meditation);
 
+<<<<<<< HEAD
             // Trim buffer
+=======
+            // Keep only last N data points
+>>>>>>> 4f32a46630c20557cea86cceabb6ac4b0c9e2154
             if (dataBuffer.timestamps.length > maxDataPoints) {
                 for (let key in dataBuffer) {
                     dataBuffer[key].shift();
                 }
             }
 
+<<<<<<< HEAD
             updateCharts();
         }
 
         // Update charts
+=======
+            // Update charts
+            updateCharts();
+        }
+
+        // Update all charts
+>>>>>>> 4f32a46630c20557cea86cceabb6ac4b0c9e2154
         function updateCharts() {
             // Wave Chart
             waveChart.data.labels = dataBuffer.timestamps;
@@ -630,12 +986,20 @@
             cognitiveChart.update('none');
         }
 
+<<<<<<< HEAD
         // Listen for EEG data
+=======
+        // Listen for EEG data updates
+>>>>>>> 4f32a46630c20557cea86cceabb6ac4b0c9e2154
         socket.on('eeg_data', (data) => {
             updateDashboard(data);
         });
 
+<<<<<<< HEAD
         // Request initial data
+=======
+        // Initial data request
+>>>>>>> 4f32a46630c20557cea86cceabb6ac4b0c9e2154
         socket.emit('request_data');
     </script>
 </body>
