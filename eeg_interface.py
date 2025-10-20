@@ -168,73 +168,95 @@ class MindWaveInterface:
     def _parse_packet(self, payload):
         """Parse ThinkGear payload and update latest data"""
         i = 0
-        while i < len(payload):
-            # Skip extended code bytes
-            while payload[i] == self.EXCODE:
-                i += 1
-
-            code = payload[i]
-            i += 1
-
-            if code == self.CODE_POOR_SIGNAL:
-                signal_quality = payload[i]
-                with self.data_lock:
-                    self.latest_data['signal_quality'] = signal_quality
-                i += 1
-
-            elif code == self.CODE_ATTENTION:
-                attention = payload[i]
-                with self.data_lock:
-                    self.latest_data['attention'] = attention
-                i += 1
-
-            elif code == self.CODE_MEDITATION:
-                meditation = payload[i]
-                with self.data_lock:
-                    self.latest_data['meditation'] = meditation
-                i += 1
-
-            elif code == self.CODE_RAW_VALUE:
-                # Raw value is 2 bytes, big-endian signed 16-bit
-                if i + 2 <= len(payload):
-                    raw_value = struct.unpack('>h', bytes(payload[i:i+2]))[0]
-                    with self.data_lock:
-                        self.latest_data['raw_value'] = raw_value
-                i += 2
-
-            elif code == self.CODE_ASIC_EEG_POWER:
-                # EEG band powers: 8 bands x 3 bytes each (24 bytes total)
-                if i + 24 <= len(payload):
-                    bands = []
-                    for j in range(8):
-                        offset = i + (j * 3)
-                        # Each band is 3 bytes, big-endian
-                        value = (payload[offset] << 16) | (payload[offset+1] << 8) | payload[offset+2]
-                        bands.append(value)
-
-                    with self.data_lock:
-                        self.latest_data['delta'] = bands[0]
-                        self.latest_data['theta'] = bands[1]
-                        self.latest_data['low_alpha'] = bands[2]
-                        self.latest_data['high_alpha'] = bands[3]
-                        self.latest_data['alpha'] = (bands[2] + bands[3]) // 2
-                        self.latest_data['low_beta'] = bands[4]
-                        self.latest_data['high_beta'] = bands[5]
-                        self.latest_data['low_gamma'] = bands[6]
-                        self.latest_data['mid_gamma'] = bands[7]
-
-                i += 24
-
-            else:
-                # Unknown code with length
-                if code >= 0x80:
-                    # Multi-byte value
-                    if i < len(payload):
-                        vlength = payload[i]
-                        i += 1 + vlength
-                else:
-                    # Single-byte value
+        try:
+            while i < len(payload):
+                # Skip extended code bytes
+                while i < len(payload) and payload[i] == self.EXCODE:
                     i += 1
+
+                # Make sure we still have data to read
+                if i >= len(payload):
+                    break
+
+                code = payload[i]
+                i += 1
+
+                if code == self.CODE_POOR_SIGNAL:
+                    if i < len(payload):
+                        signal_quality = payload[i]
+                        with self.data_lock:
+                            self.latest_data['signal_quality'] = signal_quality
+                        i += 1
+
+                elif code == self.CODE_ATTENTION:
+                    if i < len(payload):
+                        attention = payload[i]
+                        with self.data_lock:
+                            self.latest_data['attention'] = attention
+                        i += 1
+
+                elif code == self.CODE_MEDITATION:
+                    if i < len(payload):
+                        meditation = payload[i]
+                        with self.data_lock:
+                            self.latest_data['meditation'] = meditation
+                        i += 1
+
+                elif code == self.CODE_RAW_VALUE:
+                    # Raw value is 2 bytes, big-endian signed 16-bit
+                    if i + 2 <= len(payload):
+                        raw_value = struct.unpack('>h', bytes(payload[i:i+2]))[0]
+                        with self.data_lock:
+                            self.latest_data['raw_value'] = raw_value
+                        i += 2
+                    else:
+                        break
+
+                elif code == self.CODE_ASIC_EEG_POWER:
+                    # EEG band powers: 8 bands x 3 bytes each (24 bytes total)
+                    if i + 24 <= len(payload):
+                        bands = []
+                        for j in range(8):
+                            offset = i + (j * 3)
+                            # Each band is 3 bytes, big-endian
+                            value = (payload[offset] << 16) | (payload[offset+1] << 8) | payload[offset+2]
+                            bands.append(value)
+
+                        with self.data_lock:
+                            self.latest_data['delta'] = bands[0]
+                            self.latest_data['theta'] = bands[1]
+                            self.latest_data['low_alpha'] = bands[2]
+                            self.latest_data['high_alpha'] = bands[3]
+                            self.latest_data['alpha'] = (bands[2] + bands[3]) // 2
+                            self.latest_data['low_beta'] = bands[4]
+                            self.latest_data['high_beta'] = bands[5]
+                            self.latest_data['low_gamma'] = bands[6]
+                            self.latest_data['mid_gamma'] = bands[7]
+
+                        i += 24
+                    else:
+                        break
+
+                else:
+                    # Unknown code with length
+                    if code >= 0x80:
+                        # Multi-byte value
+                        if i < len(payload):
+                            vlength = payload[i]
+                            i += 1
+                            # Make sure we don't read beyond payload
+                            if i + vlength <= len(payload):
+                                i += vlength
+                            else:
+                                break
+                    else:
+                        # Single-byte value
+                        i += 1
+
+        except IndexError as e:
+            logger.warning(f"Index error parsing packet: {e}")
+        except Exception as e:
+            logger.error(f"Error parsing packet: {e}")
 
     def read_data(self):
         """
