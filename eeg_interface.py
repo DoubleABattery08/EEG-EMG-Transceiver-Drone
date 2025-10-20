@@ -100,6 +100,23 @@ class MindWaveInterface:
 
         self.is_connected = False
 
+    def _reset_data_on_poor_signal(self):
+        """Reset EEG data to zero when signal quality is poor"""
+        with self.data_lock:
+            # Only reset if signal is very poor (>150 = headset off/not touching skin)
+            if self.latest_data['signal_quality'] > 150:
+                self.latest_data['delta'] = 0
+                self.latest_data['theta'] = 0
+                self.latest_data['low_alpha'] = 0
+                self.latest_data['high_alpha'] = 0
+                self.latest_data['alpha'] = 0
+                self.latest_data['low_beta'] = 0
+                self.latest_data['high_beta'] = 0
+                self.latest_data['low_gamma'] = 0
+                self.latest_data['mid_gamma'] = 0
+                self.latest_data['attention'] = 0
+                self.latest_data['meditation'] = 0
+
     def _read_loop(self):
         """Background thread for reading data from MindWave"""
         logger.info("Starting MindWave read loop...")
@@ -109,6 +126,8 @@ class MindWaveInterface:
                 packet = self._read_packet()
                 if packet:
                     self._parse_packet(packet)
+                    # Reset data if signal quality is too poor
+                    self._reset_data_on_poor_signal()
             except Exception as e:
                 logger.error(f"Error in read loop: {e}")
                 time.sleep(0.1)

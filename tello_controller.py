@@ -87,13 +87,35 @@ class TelloController:
         self.abort = True
         self.state_running = False
 
+        # Send emergency stop to ensure motors are off
+        try:
+            if self.socket and self.is_connected:
+                self.socket.sendto(b'emergency', (self.host, self.port))
+                time.sleep(0.1)
+        except:
+            pass
+
+        # Close sockets
         if self.socket:
-            self.socket.close()
+            try:
+                self.socket.close()
+            except:
+                pass
 
         if self.state_socket:
-            self.state_socket.close()
+            try:
+                self.state_socket.close()
+            except:
+                pass
 
         self.is_connected = False
+
+        # Wait for threads to finish
+        if self.receive_thread and self.receive_thread.is_alive():
+            self.receive_thread.join(timeout=2)
+
+        if self.state_thread and self.state_thread.is_alive():
+            self.state_thread.join(timeout=2)
 
     def _receive_response(self):
         """Background thread to receive command responses"""
@@ -189,10 +211,23 @@ class TelloController:
         return None
 
     def takeoff(self):
-        """Take off"""
+        """Take off with retry logic"""
         logger.info("Taking off...")
-        response = self.send_command("takeoff", timeout=10)
-        return response == "ok"
+
+        # Try up to 3 times
+        for attempt in range(3):
+            if attempt > 0:
+                logger.warning(f"Takeoff attempt {attempt + 1}/3...")
+                # Send command mode again to wake up drone
+                self.send_command("command", timeout=3)
+                time.sleep(1)
+
+            response = self.send_command("takeoff", timeout=15)
+            if response == "ok":
+                return True
+
+        logger.error("Takeoff failed after 3 attempts")
+        return False
 
     def land(self):
         """Land"""
