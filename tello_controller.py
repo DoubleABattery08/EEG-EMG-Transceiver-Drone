@@ -53,32 +53,62 @@ class TelloController:
         self.abort = False
 
     def connect(self):
-        """Initialize connection to Tello"""
+        """Initialize connection to Tello with retry logic"""
         try:
             logger.info("Connecting to Tello...")
+
+            # Try to close and recreate socket in case it's stuck
+            try:
+                if self.socket:
+                    self.socket.close()
+            except:
+                pass
+
+            # Recreate socket with SO_REUSEADDR to avoid "address already in use"
+            self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            self.socket.bind(('', 9000))
+
+            logger.info("Socket bound to port 9000")
 
             # Start response receiver thread
             self.abort = False
             self.receive_thread = threading.Thread(target=self._receive_response, daemon=True)
             self.receive_thread.start()
 
-            # Send command mode
-            response = self.send_command("command", timeout=5)
+            # Give thread time to start
+            time.sleep(0.5)
 
-            if response and response.lower() == "ok":
-                self.is_connected = True
-                logger.info("Tello connected successfully")
+            # Try to send command mode multiple times
+            for attempt in range(3):
+                logger.info(f"Sending 'command' to Tello (attempt {attempt + 1}/3)...")
+                response = self.send_command("command", timeout=5)
 
-                # Start state receiver thread
-                self._start_state_receiver()
+                if response and response.lower() == "ok":
+                    self.is_connected = True
+                    logger.info("Tello connected successfully")
 
-                return True
-            else:
-                logger.error("Failed to enter command mode")
-                return False
+                    # Start state receiver thread
+                    self._start_state_receiver()
+
+                    return True
+                else:
+                    logger.warning(f"Attempt {attempt + 1} failed, response: {response}")
+                    if attempt < 2:
+                        time.sleep(2)
+
+            logger.error("Failed to enter command mode after 3 attempts")
+            logger.error("Make sure:")
+            logger.error("  1. Tello is powered on")
+            logger.error("  2. Connected to Tello WiFi")
+            logger.error("  3. Can ping 192.168.10.1")
+            logger.error("  4. Firewall allows UDP port 8889")
+            return False
 
         except Exception as e:
             logger.error(f"Connection failed: {e}")
+            import traceback
+            logger.error(traceback.format_exc())
             return False
 
     def disconnect(self):
