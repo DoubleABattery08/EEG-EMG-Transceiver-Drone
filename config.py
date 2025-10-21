@@ -24,7 +24,7 @@ class Config:
 
     # Safety settings
     MIN_BATTERY_LEVEL = 20  # Don't fly if battery below this percentage
-    AUTO_TAKEOFF = False  # Set to True to automatically takeoff on start
+    AUTO_TAKEOFF = True  # Set to True to automatically takeoff on start
 
     # ========== Web Visualization Server ==========
     # Enable web dashboard for real-time EEG visualization

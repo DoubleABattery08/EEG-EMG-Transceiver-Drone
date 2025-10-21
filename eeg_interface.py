@@ -120,6 +120,7 @@ class MindWaveInterface:
     def _read_loop(self):
         """Background thread for reading data from MindWave"""
         logger.info("Starting MindWave read loop...")
+        consecutive_errors = 0
 
         while self.is_reading and self.is_connected:
             try:
@@ -128,8 +129,39 @@ class MindWaveInterface:
                     self._parse_packet(packet)
                     # Reset data if signal quality is too poor
                     self._reset_data_on_poor_signal()
+                    consecutive_errors = 0  # Reset error counter on success
+                else:
+                    # No packet but no error - just continue
+                    time.sleep(0.01)
+
+            except serial.SerialException as e:
+                consecutive_errors += 1
+                error_msg = str(e)
+
+                if "device disconnected" in error_msg.lower() or "multiple access" in error_msg.lower():
+                    logger.error(f"Serial port error: {e}")
+                    logger.error("MindWave may be disconnected or port is in use by another process")
+                    logger.error("Try: sudo rfcomm release /dev/rfcomm0 && ~/connect_mindwave.sh")
+
+                    if consecutive_errors > 10:
+                        logger.error("Too many consecutive errors, stopping read loop")
+                        self.is_connected = False
+                        break
+
+                    time.sleep(1)  # Wait before retrying
+                else:
+                    logger.error(f"Serial error: {e}")
+                    time.sleep(0.1)
+
             except Exception as e:
+                consecutive_errors += 1
                 logger.error(f"Error in read loop: {e}")
+
+                if consecutive_errors > 20:
+                    logger.error("Too many errors, stopping read loop")
+                    self.is_connected = False
+                    break
+
                 time.sleep(0.1)
 
     def _read_packet(self):
