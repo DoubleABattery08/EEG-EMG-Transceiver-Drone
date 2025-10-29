@@ -46,6 +46,11 @@ class CylindricalCoordinateMapper:
         self.meditation_min = 0
         self.meditation_max = 100
 
+        # Blinking detection
+        self.alpha_history = []  # Store last 10 alpha values
+        self.blink_threshold = 300000  # Alpha spike threshold for blink detection
+        self.normal_alpha_range = (100000, 200000)  # Normal alpha range
+
         # Cylindrical coordinate ranges
         self.r_min = config.R_MIN
         self.r_max = config.R_MAX
@@ -117,21 +122,88 @@ class CylindricalCoordinateMapper:
         meditation_norm = self.normalize(self.meditation_smoothed,
                                         self.meditation_min, self.meditation_max)
 
-        # Map to cylindrical coordinates
-        # r (radius): controlled by alpha power
-        r = self.map_to_range(alpha_norm, self.r_min, self.r_max)
+        # Map to cylindrical coordinates based on control mode
+        if self.config.CONTROL_MODE == 1:
+            # Mode 1: Alpha -> r (with blinking detection), Attention -> theta, Meditation -> z
+            # Use blinking detection for forward/backward movement
+            alpha_forward_backward = self.map_alpha_to_forward_backward(alpha_power)
+            r = self.map_to_range(alpha_forward_backward, self.r_min, self.r_max)
+            theta = self.map_to_range(attention_norm, self.theta_min, self.theta_max)
+            z = self.map_to_range(meditation_norm, self.z_min, self.z_max)
+        elif self.config.CONTROL_MODE == 2:
+            # Mode 2: Alpha -> z, Attention -> r, Meditation -> theta
+            r = self.map_to_range(attention_norm, self.r_min, self.r_max)
+            theta = self.map_to_range(meditation_norm, self.theta_min, self.theta_max)
+            z = self.map_to_range(alpha_norm, self.z_min, self.z_max)
+        else:
+            # Default to Mode 1
+            r = self.map_to_range(alpha_norm, self.r_min, self.r_max)
+            theta = self.map_to_range(attention_norm, self.theta_min, self.theta_max)
+            z = self.map_to_range(meditation_norm, self.z_min, self.z_max)
+
+        # Apply deadzones
         r = self.apply_deadzone(r, (self.r_min + self.r_max) / 2, self.r_deadzone)
-
-        # theta (angle): controlled by attention
-        # Center at 0 degrees, range from negative to positive
-        theta = self.map_to_range(attention_norm, self.theta_min, self.theta_max)
         theta = self.apply_deadzone(theta, 0, self.theta_deadzone)
-
-        # z (height): controlled by meditation
-        z = self.map_to_range(meditation_norm, self.z_min, self.z_max)
         z = self.apply_deadzone(z, (self.z_min + self.z_max) / 2, self.z_deadzone)
 
         return r, theta, z
+
+    def detect_blinking(self, alpha_power):
+        """
+        Detect rapid blinking based on alpha wave spikes
+        
+        Args:
+            alpha_power: Current alpha power value
+            
+        Returns:
+            str: 'blink', 'normal', or 'low'
+        """
+        # Add current alpha to history
+        self.alpha_history.append(alpha_power)
+        
+        # Keep only last 10 values
+        if len(self.alpha_history) > 10:
+            self.alpha_history.pop(0)
+        
+        # Need at least 3 values to detect patterns
+        if len(self.alpha_history) < 3:
+            return 'normal'
+        
+        # Check for blink (sudden spike)
+        if alpha_power > self.blink_threshold:
+            return 'blink'
+        
+        # Check if in normal range
+        if self.normal_alpha_range[0] <= alpha_power <= self.normal_alpha_range[1]:
+            return 'normal'
+        
+        # Low alpha (below normal range)
+        if alpha_power < self.normal_alpha_range[0]:
+            return 'low'
+        
+        return 'normal'
+
+    def map_alpha_to_forward_backward(self, alpha_power):
+        """
+        Map alpha waves to forward/backward movement based on blinking detection
+        
+        Args:
+            alpha_power: Current alpha power value
+            
+        Returns:
+            float: Normalized value (-1 to 1) where positive = forward, negative = backward
+        """
+        blink_state = self.detect_blinking(alpha_power)
+        
+        if blink_state == 'blink':
+            # Rapid blinking = forward
+            return 1.0
+        elif blink_state == 'low':
+            # Low alpha = backward
+            return -1.0
+        else:
+            # Normal state = slight backward (hover)
+            return -0.2
 
     def cylindrical_to_velocity(self, r, theta, z):
         """
@@ -169,9 +241,9 @@ class CylindricalCoordinateMapper:
         z_normalized = (z - z_center) / (self.z_max - z_center)
         vz = int(z_normalized * self.velocity_max)
 
-        # vx (left/right) can be derived from r and theta for circular motion
-        # For simplicity, we'll use theta component for lateral movement
-        vx = int(math.sin(theta_rad) * abs(r_normalized) * self.velocity_max * 0.5)
+        # vx (left/right) - use theta for lateral movement
+        # Map theta to lateral movement for better control
+        vx = int(theta_normalized * self.velocity_max * 0.8)  # Reduced sensitivity
 
         # Clamp all values to valid range
         vx = max(self.velocity_min, min(self.velocity_max, vx))

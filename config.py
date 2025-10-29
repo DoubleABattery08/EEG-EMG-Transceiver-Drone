@@ -43,17 +43,17 @@ class Config:
     # r (radius) - controls forward/backward movement
     R_MIN = 0  # Minimum radius
     R_MAX = 100  # Maximum radius
-    R_DEADZONE = 15  # Deadzone around center to prevent drift
+    R_DEADZONE = 5  # Reduced deadzone for more responsive control
 
     # theta (angle) - controls rotation/yaw
     THETA_MIN = -180  # Minimum angle (degrees)
     THETA_MAX = 180  # Maximum angle (degrees)
-    THETA_DEADZONE = 20  # Deadzone around center (degrees)
+    THETA_DEADZONE = 10  # Reduced deadzone for more responsive control
 
     # z (height) - controls up/down movement
     Z_MIN = 0  # Minimum height
     Z_MAX = 100  # Maximum height
-    Z_DEADZONE = 15  # Deadzone around center
+    Z_DEADZONE = 5  # Reduced deadzone for more responsive control
 
     # ========== Velocity Mapping ==========
     # These control how aggressive the drone movements are
@@ -86,7 +86,7 @@ class Config:
     # Mode 1: Alpha -> r, Attention -> theta, Meditation -> z (default)
     # Mode 2: Alpha -> z, Attention -> r, Meditation -> theta
     # Mode 3: Custom mapping (modify coordinate_mapper.py)
-    CONTROL_MODE = 1
+    CONTROL_MODE = 1  # Back to Mode 1 for better blinking response
 
     # Enable/disable specific degrees of freedom
     ENABLE_R_CONTROL = True  # Forward/backward

@@ -103,8 +103,9 @@ class MindWaveInterface:
     def _reset_data_on_poor_signal(self):
         """Reset EEG data to zero when signal quality is poor"""
         with self.data_lock:
-            # Only reset if signal is very poor (>150 = headset off/not touching skin)
-            if self.latest_data['signal_quality'] > 150:
+            # Only reset if signal is very poor (>200 = headset off/not touching skin)
+            # But don't reset attention and meditation - they can still be valid
+            if self.latest_data['signal_quality'] > 200:
                 self.latest_data['delta'] = 0
                 self.latest_data['theta'] = 0
                 self.latest_data['low_alpha'] = 0
@@ -114,8 +115,9 @@ class MindWaveInterface:
                 self.latest_data['high_beta'] = 0
                 self.latest_data['low_gamma'] = 0
                 self.latest_data['mid_gamma'] = 0
-                self.latest_data['attention'] = 0
-                self.latest_data['meditation'] = 0
+                # Don't reset attention and meditation - they might still be valid
+                # self.latest_data['attention'] = 0
+                # self.latest_data['meditation'] = 0
 
     def _read_loop(self):
         """Background thread for reading data from MindWave"""
@@ -225,7 +227,7 @@ class MindWaveInterface:
                 while i < len(payload) and payload[i] == self.EXCODE:
                     i += 1
 
-                # Make sure we still have data to read
+                # Make sure there is still data to read
                 if i >= len(payload):
                     break
 
@@ -237,6 +239,9 @@ class MindWaveInterface:
                         signal_quality = payload[i]
                         with self.data_lock:
                             self.latest_data['signal_quality'] = signal_quality
+                        # Debug signal quality
+                        if signal_quality > 50:
+                            logger.warning(f"Poor signal quality: {signal_quality}")
                         i += 1
 
                 elif code == self.CODE_ATTENTION:
@@ -244,6 +249,7 @@ class MindWaveInterface:
                         attention = payload[i]
                         with self.data_lock:
                             self.latest_data['attention'] = attention
+                        logger.debug(f"Attention: {attention}")
                         i += 1
 
                 elif code == self.CODE_MEDITATION:
@@ -251,6 +257,7 @@ class MindWaveInterface:
                         meditation = payload[i]
                         with self.data_lock:
                             self.latest_data['meditation'] = meditation
+                        logger.debug(f"Meditation: {meditation}")
                         i += 1
 
                 elif code == self.CODE_RAW_VALUE:
@@ -283,6 +290,9 @@ class MindWaveInterface:
                             self.latest_data['high_beta'] = bands[5]
                             self.latest_data['low_gamma'] = bands[6]
                             self.latest_data['mid_gamma'] = bands[7]
+                        
+                        # Debug alpha waves
+                        logger.debug(f"Alpha waves - Low: {bands[2]}, High: {bands[3]}, Combined: {(bands[2] + bands[3]) // 2}")
 
                         i += 24
                     else:
@@ -295,7 +305,7 @@ class MindWaveInterface:
                         if i < len(payload):
                             vlength = payload[i]
                             i += 1
-                            # Make sure we don't read beyond payload
+                            # Make sure the code doesn't read beyond payload
                             if i + vlength <= len(payload):
                                 i += vlength
                             else:
