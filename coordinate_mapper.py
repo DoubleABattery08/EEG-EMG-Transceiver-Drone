@@ -7,7 +7,6 @@ and converts them to drone velocity commands
 
 import math
 import logging
-import numpy as np
 
 logger = logging.getLogger(__name__)
 
@@ -299,6 +298,7 @@ if __name__ == "__main__":
         R_DEADZONE = 10
         THETA_DEADZONE = 15
         Z_DEADZONE = 10
+        CONTROL_MODE = 1
 
     config = MockConfig()
     mapper = CylindricalCoordinateMapper(config)

@@ -4,8 +4,8 @@
 # Serial communication for MindWave EEG headset
 pyserial>=3.5
 
-# Numerical operations for coordinate mapping
-numpy>=1.21.0
+# Numerical operations (optional - not required for core pipeline)
+# numpy>=1.21.0
 
 # Web server for real-time EEG visualization
 flask>=2.3.0
@@ -16,8 +16,8 @@ python-socketio>=5.9.0
 # Optional: Enhanced Tello SDK (alternative to custom implementation)
 # djitellopy>=2.4.0
 
-# Optional: Data visualization
-matplotlib>=3.5.0
+# Optional: Data visualization (not used in core pipeline)
+# matplotlib>=3.5.0
 
 # Optional: Real-time plotting
 # plotly>=5.0.0

@@ -76,7 +76,7 @@ sudo apt-get install python3-pip
 ### Install Dependencies
 ```bash
 # Navigate to project directory
-cd EEG-EMG-Transceiver-Drone-1
+cd EEG-EMG-Transceiver-Drone-3
 
 # Install required packages
 pip3 install -r requirements.txt
@@ -221,7 +221,7 @@ python3 main.py
 ## Project Structure
 
 ```
-EEG-EMG-Transceiver-Drone-1/
+EEG-EMG-Transceiver-Drone-3/
 ├── main.py                    # Main control script
 ├── eeg_interface.py           # MindWave EEG headset interface
 ├── tello_controller.py        # Tello drone controller
