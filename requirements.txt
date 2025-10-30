@@ -17,7 +17,7 @@ python-socketio>=5.9.0
 # djitellopy>=2.4.0
 
 # Optional: Data visualization
-# matplotlib>=3.5.0
+matplotlib>=3.5.0
 
 # Optional: Real-time plotting
 # plotly>=5.0.0
